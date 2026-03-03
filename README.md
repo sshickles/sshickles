@@ -73,8 +73,7 @@ I lead engineering for [**Prison Professors**](https://prisonprofessors.org), a 
 
 <div align="center">
 
-<img src="https://github-readme-stats.vercel.app/api?username=sshickles&show_icons=true&theme=tokyonight&hide_border=true&count_private=true" alt="GitHub Stats" height="165"/>
-<img src="https://github-readme-streak-stats.herokuapp.com/?user=sshickles&theme=tokyonight&hide_border=true" alt="GitHub Streak" height="165"/>
+<img src="https://streak-stats.demolab.com/?user=sshickles&theme=tokyonight&hide_border=true" alt="GitHub Streak" height="200"/>
 
 </div>
 
