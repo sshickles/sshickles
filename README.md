@@ -1,33 +1,89 @@
-# Hi there, I'm [Steve Shickles](http://www.steveshickles.com/) 👋
+<div align="center">
 
-## I'm an AWS Principal Cloud Engineer
+# Steve Shickles
 
-- 🔭 I’m currently working on a developing my skills on cloud computing!
-- 🌱 I’m currently learning everything relevant and taking all the oppurtinity I can get.
-- 👯 I’m looking to collaborate with other developers and cloud engineers.
-- 💬 Ask me about cloud computing.
-- 🥅 2022 Goals: Be more engaged on contributing to the cloud community.
+**Full-stack engineer building AI agent systems in production.**
 
-<br />
+[![X](https://img.shields.io/badge/@shickles-000000?style=flat&logo=x&logoColor=white)](https://x.com/shickles)
+[![LinkedIn](https://img.shields.io/badge/steveshickles-0A66C2?style=flat&logo=linkedin&logoColor=white)](https://linkedin.com/in/steveshickles)
+[![Website](https://img.shields.io/badge/steveshickles.com-4A90D9?style=flat&logo=safari&logoColor=white)](https://steveshickles.com)
 
-### Languages and Tools:
+</div>
 
-<img align="left" alt="HTML5" width="26px" src="https://img.icons8.com/color/48/000000/amazon-web-services.png" />
-<img align="left" alt="Visual Studio Code" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/visual-studio-code/visual-studio-code.png" />
-<img align="left" alt="HTML5" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/html/html.png" />
-<img align="left" alt="CSS3" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/css/css.png" />
-<img align="left" alt="JavaScript" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/javascript/javascript.png" />
-<img align="left" alt="React" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/react/react.png" />
-<img align="left" alt="Node.js" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/nodejs/nodejs.png" />
-<img align="left" alt="SQL" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/sql/sql.png" />
-<img align="left" alt="MySQL" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/mysql/mysql.png" />
-<img align="left" alt="Git" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/git/git.png" />
-<img align="left" alt="GitHub" width="26px" src="https://raw.githubusercontent.com/github/explore/78df643247d429f6cc873026c0622819ad797942/topics/github/github.png" />
-<img align="left" alt="Powershell" width="26px" src="https://img.icons8.com/color/48/000000/powershell.png" />
-<img align="left" alt="Python" width="26px" src="https://img.icons8.com/color/48/000000/python.png" />
-<img align="left" alt="PHP" width="26px" src="https://img.icons8.com/officel/48/000000/php-logo.png" />
-<img align="left" alt="PHP" width="26px" src="https://img.icons8.com/color/48/000000/java-coffee-cup-logo.png" />
+---
 
-<br />
-<br />
+I lead engineering for [**Prison Professors**](https://prisonprofessors.org), a 501(c)(3) nonprofit where I built the entire tech platform from scratch — profiles system, website, CRM, course delivery, and AI-powered tools — all serving people navigating the federal justice system across **178+ facilities**.
 
+### 🤖 What I'm Building
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  3 Mac Studios running autonomous AI coding agents          │
+│  Shared memory via Obsidian vault indexed by QMD            │
+│  Three-layer memory: local vectors + cloud + persistent     │
+│  Automated: morning briefs, social, email, PR reviews       │
+└─────────────────────────────────────────────────────────────┘
+```
+
+- **Multi-agent fleet** — AI agents that share context, dispatch coding tasks, and operate 24/7
+- **Production AI workflows** — automated email triage, daily briefings, content pipelines, PR review orchestration
+- **Full-stack apps** — Next.js + Convex + TypeScript + Vercel for a real nonprofit serving real people
+- **Memory architecture** — BM25 + vector embeddings + LLM reranking for persistent agent memory
+
+### 🛠️ Stack
+
+<table>
+<tr>
+<td><b>Frontend</b></td>
+<td>Next.js · React · TypeScript · Tailwind · DaisyUI</td>
+</tr>
+<tr>
+<td><b>Backend</b></td>
+<td>Convex · Node.js · Python · Vercel</td>
+</tr>
+<tr>
+<td><b>Cloud</b></td>
+<td>AWS · Vercel · Cloudflare</td>
+</tr>
+<tr>
+<td><b>AI/ML</b></td>
+<td>OpenAI · Anthropic · Gemini · Claude Code · QMD</td>
+</tr>
+<tr>
+<td><b>Data</b></td>
+<td>Convex · PostHog · Google Analytics · Search Console</td>
+</tr>
+<tr>
+<td><b>DevOps</b></td>
+<td>GitHub Actions · CodeRabbit · Greptile · 1Password</td>
+</tr>
+</table>
+
+### 📊 Background
+
+```
+15+ years │ Cloud Architecture → IT Leadership → Full-Stack Development → AI Systems
+```
+
+- **Zynga** — Principal Cloud Engineer, automation & infrastructure at global scale
+- **Simple Helix** — Co-founded & ran an IT services company for 12+ years (data centers, managed services, cybersecurity)
+- **Prison Professors** — Currently leading all engineering as a contractor, building tech that matters
+
+### 📈 GitHub Stats
+
+<div align="center">
+
+<img src="https://github-readme-stats.vercel.app/api?username=sshickles&show_icons=true&theme=tokyonight&hide_border=true&count_private=true" alt="GitHub Stats" height="165"/>
+<img src="https://github-readme-streak-stats.herokuapp.com/?user=sshickles&theme=tokyonight&hide_border=true" alt="GitHub Streak" height="165"/>
+
+</div>
+
+---
+
+<div align="center">
+
+*Open to full-time roles and contract work. [Let's build something.](mailto:steveshickles@gmail.com)*
+
+<img src="https://komarev.com/ghpvc/?username=sshickles&style=flat-square&color=6B46C1" alt="Profile Views"/>
+
+</div>
