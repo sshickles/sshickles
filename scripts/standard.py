@@ -19,7 +19,7 @@ FILES = ['policy/policy.md', 'policy/repository.md', 'policy/t3-actions.json', '
          'docs/t3-compatibility.md', '.githooks/pre-push',
          '.github/workflows/ci.yml', '.github/workflows/policy-audit.yml',
          'apply-ruleset.sh', 'scripts/new-repo', 'scripts/lint-shell', 'scripts/setup', 'scripts/check', 'scripts/test', 'scripts/review',
-         'scripts/commands.py', 'scripts/development.py', 'scripts/pre_push.py',
+         'scripts/commands.py', 'scripts/development.py', 'scripts/pre_push.py', 'scripts/changed_tests.py',
          'scripts/repository.py', 'scripts/standard.py', 'scripts/halo.py',
          'scripts/worktree.py', 'scripts/wt.sh', 'scripts/install-hooks.mjs']
 EXECUTABLES = ['scripts/lint-shell', 'scripts/new-repo', 'apply-ruleset.sh', 'scripts/setup', 'scripts/check', 'scripts/test', 'scripts/review', '.githooks/pre-push', 'scripts/wt.sh']

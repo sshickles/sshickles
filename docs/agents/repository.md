@@ -46,7 +46,10 @@ shell syntax validation. Review profile edits for Markdown rendering and
 accurate links. Follow [review checklist](review-checklist.md).
 
 There were no existing setup scripts, hooks, tests or CI workflows to migrate.
-The shared pre-push hook rejects main destinations and runs check. No additional
+The shared pre-push hook rejects main destinations and runs `check --pre-push`.
+The custom structure validator has no supported affected-test mapping, so hook
+mode keeps the full test command. CI and plain `check` also retain full validation.
+No additional
 repository checks are needed under `.githooks/pre-push.d/`. PR review requires
 current-head Greptile 5/5 and a clean local CodeRabbit review.
 

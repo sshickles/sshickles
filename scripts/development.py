@@ -57,7 +57,30 @@ def read_config(path):
     # Every initializer must be reviewed, idempotent and non-deploying in any environment.
     if dev["localCommands"] and dev["environment"] == "none":
         raise ValueError("Select an environment before enabling localCommands")
+    mapping = dev.get("changedTestCommand")
+    if mapping is not None:
+        if (not isinstance(mapping, dict) or set(mapping) != {"kind", "command"}
+                or mapping["kind"] not in ("vitest", "pytest")):
+            raise ValueError("development.changedTestCommand requires kind (vitest or pytest) and command")
+    if mapping is not None and mapping["kind"] == "vitest":
+        runner = mapping["command"]
+        if (not isinstance(runner, list) or not runner or runner[-1] != "vitest"
+                or config["testCommand"][:len(runner) + 1] != [*runner, "run"]):
+            raise ValueError("Vitest mapping command must end in vitest and testCommand must start with that command plus run")
+    if (mapping is not None and mapping["kind"] == "pytest"
+            and mapping["command"] != config["testCommand"]):
+        raise ValueError("Pytest mapping command must equal testCommand, including all suite options")
+    globs = dev.get("sharedInfrastructureGlobs", [])
+    if not isinstance(globs, list) or any(
+        not isinstance(g, str) or not g or Path(g).is_absolute() or ".." in Path(g).parts
+        for g in globs
+    ):
+        raise ValueError("development.sharedInfrastructureGlobs must contain checkout-relative globs")
+    if "sharedInfrastructureGlobs" in dev:
+        dev["sharedInfrastructureGlobs"] = [g.removeprefix("./") for g in globs]
     commands = config["validation"] + dev["localCommands"] + [config.get("testCommand")]
+    if mapping is not None:
+        commands = commands + [mapping["command"]]
     if "dependencies" in dev:
         if not isinstance(dev["dependencies"], dict):
             raise ValueError("development.dependencies must be an object")
