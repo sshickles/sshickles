@@ -155,8 +155,11 @@ def main(name):
             return 0
         if name == 'review':
             return review()
-        if len(sys.argv) != 1:
-            raise ValueError(f'{name} takes no arguments')
+        parser = argparse.ArgumentParser()
+        if name == 'check':
+            parser.add_argument('--pre-push', nargs='*', metavar='COMMIT')
+        args = parser.parse_args()
+        hook = name == 'check' and args.pre_push is not None
         require_tool('mise')
         if name == 'test':
             config = read_config(ROOT / '.repo-standard.json')
@@ -165,13 +168,21 @@ def main(name):
         from repository import validate
         validate(ROOT)
         config = read_config(ROOT / '.repo-standard.json')
-        result = subprocess.run([str(ROOT / 'scripts/test')])
-        if result.returncode:
-            return result.returncode
+        if not hook:
+            result = subprocess.run([str(ROOT / 'scripts/test')])
+            if result.returncode:
+                return result.returncode
         for command in config['validation']:
+            if hook and command == config['testCommand']:
+                continue
             result = subprocess.run(['mise', 'exec', '--', *command], env={**os.environ, 'MISE_AUTO_INSTALL': '0'})
             if result.returncode:
                 return result.returncode
+        if hook:
+            from changed_tests import run
+            result = run(ROOT, config, args.pre_push)
+            if result:
+                return result
         print('All local checks passed.')
         return 0
     except (ValueError, OSError, RuntimeError, KeyError, TypeError) as error:

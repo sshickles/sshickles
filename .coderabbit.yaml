@@ -27,6 +27,7 @@ reviews:
     - "!docs/t3-compatibility.md"
     - "!greptile.json"
     - "!ruleset.json"
+    - "!scripts/changed_tests.py"
     - "!scripts/check"
     - "!scripts/commands.py"
     - "!scripts/development.py"
