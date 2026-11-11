@@ -6,16 +6,16 @@ import sys
 from development import ROOT
 
 
-def repository_checks(root):
-    directory = root / '.githooks/pre-push.d'
+def repository_checks(root, directory_name='.githooks/pre-push.d'):
+    directory = root / directory_name
     if not directory.exists() and not directory.is_symlink():
         return []
     if directory.is_symlink() or not directory.is_dir():
-        raise ValueError('Expected a repository-owned directory: .githooks/pre-push.d')
+        raise ValueError('Expected a repository-owned directory: ' + directory_name)
     checks = sorted(directory.iterdir())
     for check in checks:
         if check.is_symlink() or not check.is_file() or not os.access(check, os.X_OK):
-            raise ValueError(f'Repository pre-push check must be a regular executable file: {check.name}')
+            raise ValueError(f'Repository check must be a regular executable file: {directory_name}/{check.name}')
     return checks
 
 

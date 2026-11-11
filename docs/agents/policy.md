@@ -1,6 +1,6 @@
 <!-- Generated. Do not edit. -->
 Canonical repository: sshickles/repo-standard
-Canonical revision: 99699eafc33e84a23d07930048784c9ec6434dc9
+Canonical revision: b152759276d78a959805b2b4b100d08aa4a8006f
 Canonical source: policy/policy.md
 SHA-256: 8ca275bc168ed69739e78ab0b712456dd9c9c891271c23fdcd7b084e0e390f57
 

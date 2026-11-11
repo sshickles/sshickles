@@ -61,7 +61,14 @@ def read_config(path):
     if "dependencies" in dev:
         if not isinstance(dev["dependencies"], dict):
             raise ValueError("development.dependencies must be an object")
-        commands = commands + [dev["dependencies"].get("install")]
+        adapter = dev["dependencies"]
+        if adapter.get("mode") == "none":
+            if set(adapter) != {"mode"}:
+                raise ValueError("No-dependencies mode accepts only mode: none")
+        else:
+            if adapter.get("mode", "locked") != "locked":
+                raise ValueError("dependencies.mode must be locked or none")
+            commands = commands + [adapter.get("install")]
     for command in commands:
         if not isinstance(command, list) or not command or not all(isinstance(s, str) and s for s in command):
             raise ValueError("Commands must be nonempty argv lists, with no secrets")
@@ -83,6 +90,20 @@ def read_config(path):
         for c in checks
     ):
         raise ValueError("ciChecks must name the repository's actual CI checks")
+    declared_tools = dev.get("tools", {})
+    if not isinstance(declared_tools, dict) or any(
+        not isinstance(k, str) or not k or not isinstance(v, str)
+        or not re.fullmatch(r"\d+\.\d+\.\d+", v) for k, v in declared_tools.items()
+    ):
+        raise ValueError("development.tools must map tool names to exact x.y.z pins")
+    ci = config.get("existingCI")
+    if ci is not None:
+        if (not isinstance(ci, dict) or set(ci) != {"workflow", "job", "context"}
+                or not all(isinstance(v, str) and v for v in ci.values())
+                or not re.fullmatch(r"\.github/workflows/[A-Za-z0-9_.-]+\.ya?ml", ci["workflow"])
+                or not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_-]*", ci["job"])
+                or ci["context"] not in [c["context"] for c in checks]):
+            raise ValueError("existingCI requires workflow, job and a context listed in ciChecks")
     conventions = config["conventions"]
     for key in ("branchPattern", "issueReadiness", "claiming"):
         if not isinstance(conventions.get(key), str) or not conventions[key].strip():
@@ -101,9 +122,26 @@ def run(command, root=ROOT):
 
 
 def toolchain(root, config=None):
+    if not (root / "mise.toml").is_file():
+        raise ValueError("Missing mise.toml; adopt the repository tool configuration before setup")
     tools = tomllib.loads((root / "mise.toml").read_text()).get("tools", {})
-    if not tools or any(not isinstance(v, str) or not re.fullmatch(r"\d+\.\d+\.\d+", v) for v in tools.values()):
+    if not isinstance(tools, dict) or any(not isinstance(v, str) or not re.fullmatch(r"\d+\.\d+\.\d+", v) for v in tools.values()):
         raise ValueError("Pin every mise.toml tool to an exact x.y.z version")
+    config = config or read_config(root / ".repo-standard.json")
+    if config["development"].get("dependencies", {}).get("mode") == "none":
+        package_file = root / "package.json"
+        if package_file.exists():
+            package_data = json.loads(package_file.read_text())
+            if not isinstance(package_data, dict):
+                raise ValueError("package.json must contain an object")
+            fields = ("dependencies", "devDependencies", "optionalDependencies")
+            if any(not isinstance(package_data.get(key, {}), dict) for key in fields):
+                raise ValueError("Package dependency fields must be objects")
+            if any(package_data.get(key) for key in fields):
+                raise ValueError("No-dependencies mode conflicts with declared package dependencies")
+        return tools, []
+    if not tools:
+        raise ValueError("Locked dependency installs require exact mise tool pins")
     package = root / "package.json"
     if not package.exists():
         config = config or read_config(root / ".repo-standard.json")
@@ -175,7 +213,9 @@ def provision(root, doctor=False):
         if actual != expected:
             raise ValueError(f"{name} version mismatch; run mise install in this checkout")
     if doctor:
-        if (root / "package.json").exists():
+        if not install:
+            missing = False
+        elif (root / "package.json").exists():
             missing = not (root / "node_modules").is_dir() and not (root / ".pnp.cjs").is_file()
         else:
             missing = any(not (root / p).exists() for p in dev["dependencies"]["artifacts"])
@@ -185,11 +225,16 @@ def provision(root, doctor=False):
         if result.stdout.strip() != ".githooks":
             raise ValueError("Hooks missing; run ./scripts/setup")
     else:
-        run(["mise", "exec", "--", *install], root)
+        if install:
+            run(["mise", "exec", "--", *install], root)
         run(["git", "config", "core.hooksPath", ".githooks"], root)
         for command in dev["localCommands"]:
             run(["mise", "exec", "--", *command], root)
 
+    if doctor:
+        from pre_push import repository_checks
+        for check in repository_checks(root, '.githooks/doctor.d'):
+            run([str(check)], root)
     import halo
     halo.prepare(root, doctor)
     if doctor:

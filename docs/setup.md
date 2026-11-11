@@ -21,6 +21,17 @@ another project in public configuration.
 lockfile. Setup supports pnpm frozen installs, npm ci and Yarn 2+ immutable
 installs. Custom non-Node stacks declare `development.dependencies` with a
 committed `lockfile`, a locked `install` argv list and generated `artifacts`.
+For repositories with no dependencies, set `development.dependencies` to
+`{"mode": "none"}`. Setup and doctor then need no package manifest, lockfile or
+dependency artifacts. Declared Node package dependencies conflict with this mode.
+For custom adoption without an existing `mise.toml`, declare exact tool versions in
+`development.tools`, for example `{"python": "3.13.5"}`. The generated file contains
+only those tools; an empty object produces an empty tools table. Existing mise
+files are preserved; `development.tools` is an initial rendering input, not a
+second source of pins. Even no-dependencies mode requires `mise.toml` (an empty
+`[tools]` table is valid). The exact mise pin is the source of truth, not a floating
+CI version such as `node-version: "24"`. Canonical CI installs mise and calls
+setup, which reads those pins and installs hooks before running check.
 Review those stack-specific commands before use. `development.requiredFiles`
 lists ignored files pulled from the service's authoritative store. Setup refuses
 missing artifacts before dependent commands. Reviewed, finite `localCommands`
@@ -72,7 +83,16 @@ and integration setup, then use one rollout PR and native squash auto-merge.
 Missing live settings or review integration are pending dependencies, not gates
 to bypass. Verify that server-side protections enforce required checks and
 current-head Greptile 5/5 approval before enabling auto-merge. Leave the PR open
-with auto-merge off if those gates are not yet enforced. The optional T3 adapter is documented in
+with auto-merge off if those gates are not yet enforced. A repository with no
+required status checks can merge on approval alone once auto-merge is enabled.
+Its adoption PR relies on Greptile approval until required contexts are configured;
+preview recommends `checks` and `Greptile Review` (integration 867647). Keep both
+explicit in `ciChecks`; validation rejects incorrect bindings or drift from the
+rendered ruleset. This list owns the required status contexts and their integration
+bindings. Preview shows removal of unlisted contexts; add any live CI contexts
+that must remain to `ciChecks` before approving the proposal. Existing ruleset
+differences require manual reconciliation, and `--apply` refuses them.
+The optional T3 adapter is documented in
 [t3-compatibility.md](t3-compatibility.md). A saved creation action must be imported
 and updated explicitly; committing `t3.json` does not activate saved actions.
 
@@ -98,6 +118,17 @@ stack, adjust validation, test command and pinned tooling deliberately before
 finishing adoption. The test entry point runs the pinned `testCommand`; set it to the
 destination suite. Check always runs test in addition to configured validation.
 
+### Preserve an existing CI job
+
+Set `existingCI` to `{"workflow": ".github/workflows/build.yml", "job": "verify", "context": "checks"}`
+and retain `checks` in `ciChecks`. Adoption omits the canonical CI workflow and
+preserves the selected file. Validation requires the selected job to have that
+name (or job ID if unnamed) and a standalone `- run: ./scripts/check` step.
+Use conventional block YAML with two-space job and step indentation as in the
+canonical workflow. Dynamic names, aliases and reusable jobs require manual
+integration. Keep setup and pinned tools in the existing job. This check verifies
+the command contract, not GitHub trigger coverage or successful execution.
+
 ### Preserve repository pre-push checks
 
 Keep the generated `.githooks/pre-push` and `scripts/pre_push.py` unchanged.
@@ -122,6 +153,36 @@ with real architecture, commands, ownership, runtime, verification and recovery
 information. Remove superseded entry points and duplicate policy prose after
 migrating callers. Thin instruction adapters point to AGENTS.md.
 
+### Repository service diagnosis
+
+Put read-only service checks in regular executable files under `.githooks/doctor.d/`.
+`./scripts/setup --doctor` runs them in filename order from the checkout root,
+after tool, dependency and hook checks. The first failure stops doctor and returns
+nonzero. Normal setup does not run them. Use `mise exec --` inside a hook when it
+needs pinned tools. Never install, deploy or mutate services from doctor hooks.
+These repository-owned checks stay in review scope and survive canonical updates.
+
+### Review scope in adopted repositories
+
+The renderer derives exact managed paths from its output manifest for CodeRabbit
+`reviews.path_filters` and Greptile `ignorePatterns`. Vendored scripts, the shared
+hook, generated policy, provenance lock and other immutable canonical outputs
+are reviewed in `sshickles/repo-standard`, not again in destination repositories.
+Validation authenticates their source and rejects modifications to excluded files.
+No managed-path exclusions are generated in the canonical repository itself.
+The selected canonical revision is an operator-approved trust anchor. Provenance
+checks consistency with that source; it does not independently authorize replacing
+the validators and lock together. Owner rollout direction 12 places their review
+in the canonical repository, so destination exclusions include both.
+
+Repository instructions, `.repo-standard.json`, mise pins, application code,
+repository CI workflows, custom scripts, `.githooks/pre-push.d/*` and
+`.githooks/doctor.d/*` remain in scope. Mixed local integrations such as `t3.json`,
+`AGENTS.md` and `.claude/settings.json` also stay in scope. Existing in-scope
+finding, warning and unavailable-review gates remain unchanged. Use the current
+canonical updater to generate both reviewer configs; do not hand-copy ignore lists
+or edit excluded runtime files. Put service-specific behavior in the owned hooks.
+
 ## Integrity and canonical updates
 
 `policy/policy.md` is the canonical body. `.repo-standard-source.json` embeds
@@ -141,11 +202,16 @@ which can leave checks and subsequent local updates unable to start. The current
 canonical generator is the supported bootstrap for upgrades, including recovery
 from a partial installed-generator update. Preserve and commit any partial update
 on the task branch first; keep the existing lock for integrity and collision checks.
-If an interrupted update changed checked commands before refreshing the lock,
+If an interrupted update changed canonical-managed files before refreshing the lock,
 validation, audit and update reject that drift. Preserve the partial changes in a
-commit, restore the checked commands to their last valid installed versions
+commit, restore checked commands and all other canonical-managed files (including
+managed documentation and helper scripts) to their last valid installed versions
 matching the retained lock, commit that restoration, and retry from the selected
-canonical checkout.
+canonical checkout. An obsolete renderer may also leave reviewer configs without
+the managed-path exclusions required by its recorded source. Preserve that partial
+result, regenerate `.coderabbit.yaml` and `greptile.json` from the authenticated
+recorded snapshot with the current canonical renderer, inspect and commit those
+configs, then retry. The updater never silently repairs configuration drift.
 
 ```sh
 cd /path/to/canonical
@@ -165,7 +231,9 @@ Local integrations are preserved when the canonical file is unchanged between
 the recorded and selected revisions. Shared commands and the hook still require
 exact content from the recorded revision. The caller selects the
 reviewed canonical revision; ancestry is not required because native squash
-merging can replace the original source history. It is safe to rerun. Finish, check and review the diff,
+merging can replace the original source history. The updater writes the provenance lock last, after all other outputs succeed.
+A successful apply is safe to rerun. After interruption, follow the recovery steps
+above before retrying. Finish, check and review the diff,
 then update the repository's existing `chore/canonical-standard` rollout PR
 rather than creating another. Do not rebase or force-push a published branch.
 No command automatically opens PRs or changes live settings.
@@ -207,7 +275,10 @@ inspect repository and inherited rulesets and legacy protection, actual recent
 PR check names, integration bindings and current bypass actors. Present one
 exact owner approval batch, including removal of deployment requirements.
 Preserve unrelated protections and bypass actors. The `configure` preview
-refuses conflicting managed rulesets rather than overwriting them. Reconcile
+shows an in-place update diff for an existing default-branch ruleset, including
+one with a different name. It preserves unmanaged rule parameters and bypass
+actors, and refuses ambiguous multiple targets. Existing-rule updates remain
+preview-only; apply refuses them until manually reconciled. Reconcile
 existing protections in the approved plan; never add a redundant ruleset to
 work around a conflict. A ruleset with changed bypass actors requires explicit
 review. This task does not apply that plan.
@@ -249,6 +320,12 @@ repository arguments. They do not authorize changes to other repositories.
 Verify each target against the owner's assigned scope before a GitHub write.
 
 ## Recovery
+
+The manual worktree helper clears inherited Git repository variables while retaining
+command-scope HTTP, credential, SSH, protocol and URL rewrite settings. It fetches and
+uses the full configured remote-tracking ref, and refuses calls from another
+repository's checkout. Short local branch or tag names cannot shadow its base.
+
 
 Creation refuses an existing destination. After partial failure, retain the
 created repository and local checkout, inspect the error, and resume adoption
