@@ -17,7 +17,7 @@ tool used by validation. Bash supplies shell syntax checking.
 - `./scripts/setup --doctor` verifies local setup.
 - `./scripts/check` validates policy integrity, runs test, actionlint and shell syntax checks.
 - `./scripts/test` validates repository structure and canonical provenance.
-- `./scripts/review` runs the configured CodeRabbit review against origin/main.
+- `./scripts/review` runs CodeRabbit against origin/main, then falls back to a model reviewer if needed.
 
 CI runs `./scripts/check` in the `checks` job. The policy audit workflow
 reports canonical updates without applying them.
@@ -48,10 +48,16 @@ accurate links. Follow [review checklist](review-checklist.md).
 There were no existing setup scripts, hooks, tests or CI workflows to migrate.
 The shared pre-push hook rejects main destinations and runs `check --pre-push`.
 The custom structure validator has no supported affected-test mapping, so hook
-mode keeps the full test command. CI and plain `check` also retain full validation.
+mode keeps the full test command. Leave `development.changedTestCommand` unset: this
+command validates structure and provenance rather than running a test runner.
+There are no test helpers, fixtures or setup files requiring additional
+`development.sharedInfrastructureGlobs`; canonical scripts and configuration
+already trigger full validation. CI and plain `check` also retain full validation.
 No additional
 repository checks are needed under `.githooks/pre-push.d/`. PR review requires
-current-head Greptile 5/5 and a clean local CodeRabbit review.
+current-head Greptile 5/5 and required CI. Run local review before pushing;
+fix findings, or report exit 2 if no reviewer can run. Local review never blocks
+push or PR creation.
 
 ## Deployment and recovery
 
