@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+mkdir -p .tools
+ln -sfn "$(command -v actionlint)" .tools/actionlint
