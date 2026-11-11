@@ -48,8 +48,8 @@ accurate links. Follow [review checklist](review-checklist.md).
 There were no existing setup scripts, hooks, tests or CI workflows to migrate.
 The shared pre-push hook rejects main destinations and runs `check --pre-push`.
 The custom structure validator has no supported affected-test mapping, so hook
-mode keeps the full test command. Leave `development.changedTestCommand` unset: this
-command validates structure and provenance rather than running a test runner.
+mode declares `development.changedTestCommand` as `full` with a reason: structure
+and canonical provenance validation requires the complete repository.
 There are no test helpers, fixtures or setup files requiring additional
 `development.sharedInfrastructureGlobs`; canonical scripts and configuration
 already trigger full validation. CI and plain `check` also retain full validation.

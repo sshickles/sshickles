@@ -40,6 +40,10 @@
       "artifacts": [
         ".tools/actionlint"
       ]
+    },
+    "changedTestCommand": {
+      "kind": "full",
+      "reason": "Repository structure and canonical provenance validation requires the complete repository."
     }
   },
   "conventions": {
