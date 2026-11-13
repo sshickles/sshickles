@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "repository": "sshickles/sshickles",
   "profile": "custom",
   "git": {
@@ -44,12 +44,75 @@
     "changedTestCommand": {
       "kind": "full",
       "reason": "Repository structure and canonical provenance validation requires the complete repository."
-    }
+    },
+    "fileChecks": [
+      {
+        "command": [
+          "actionlint"
+        ],
+        "include": [
+          ".github/workflows/*.yml",
+          ".github/workflows/*.yaml"
+        ]
+      },
+      {
+        "command": [
+          "bash",
+          "-n"
+        ],
+        "include": [
+          "*.sh",
+          "scripts/install-tools"
+        ],
+        "perFile": true
+      },
+      {
+        "command": [
+          "python3",
+          "-B",
+          "-c",
+          "import json, sys; [json.load(open(name)) for name in sys.argv[1:]]"
+        ],
+        "include": [
+          "*.json"
+        ]
+      }
+    ]
   },
-  "conventions": {
-    "branchPattern": "^(feat|fix|docs|chore|ci|refactor|prototype|research)/[a-z0-9]+(-[a-z0-9]+)*$",
-    "issueReadiness": "No readiness label is required. See docs/agents/repository.md.",
-    "claiming": "Check for an assignee or existing PR before starting; follow the destination issue policy."
+  "facts": {
+    "summary": "The owner's GitHub profile repository. GitHub shows the root README.md on the profile page.",
+    "commands": [],
+    "deployments": [
+      {
+        "name": "Profile page",
+        "service": "GitHub",
+        "environment": "production",
+        "trigger": "merge to main",
+        "url": "https://github.com/sshickles"
+      }
+    ],
+    "backendFolders": [],
+    "services": [
+      {
+        "name": "GitHub Actions",
+        "purpose": "Runs the required checks job."
+      },
+      {
+        "name": "Greptile",
+        "purpose": "Reviews every PR; its approval is a required check."
+      },
+      {
+        "name": "CodeRabbit",
+        "purpose": "Reviewer behind ./scripts/review."
+      },
+      {
+        "name": "Shields.io, streak-stats.demolab.com and komarev.com",
+        "purpose": "Serve the badge, streak and view-count images embedded in README.md."
+      }
+    ],
+    "plugins": [],
+    "productRules": [],
+    "coderabbitProfile": "ss"
   },
   "ciChecks": [
     {
@@ -60,7 +123,7 @@
   "testCommand": [
     "python3",
     "-B",
-    "scripts/repository.py",
+    "scripts/standard.py",
     "validate",
     "."
   ]
